@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Создать пост</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Подключение Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg bg-body-tertiary rounded" aria-label="Twelfth navbar example">
+		<div class="collapse navbar-collapse justify-content-md-center" id="navbar">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main}">Главная</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main/new_post}">Создать пост</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
+				</li>
+				<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle active" th:href="@{/main/new_posts}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Профиль</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li>
+                            	<a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
+                            </li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" style="display: inline;">
+                                    <button type="submit" class="dropdown-item btn btn-link">Выйти</button>
+                                </form>
+                            </li>
+                       </ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	
+	<div>
+		<form th:method="POST" th:action="@{/main}" th:object="${post}" enctype="multipart/form-data">
+			<div class="mb-3">
+				<label for="postText" class="form-label">Ведите текст поста: </label>
+				<textarea class="form-control" id="postText" th:field="*{postText}" rows="5" placeholder="Введите текст..."></textarea>
+			</div>
+			<div class="mb-3">
+				<label for="file" class="form-label">Выберите файл (изображение): </label>
+    			<input type="file" name="file" id="file" accept="image/*" class="form-control" />
+			</div>
+			<input type="submit" value="Отправить пост" class="btn btn-success" /> 
+		</form>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

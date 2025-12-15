@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Настройки</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Подключение Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg bg-body-tertiary rounded">
+		<div class="collapse navbar-collapse justify-content-md-center" id="navbar">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main}">Главная</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main/new_post}">Создать пост</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
+				</li>
+				<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle active" th:href="@{/main/settings}" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Профиль</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                            	<a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
+                            </li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" style="display: inline;">
+                                    <button type="submit" class="dropdown-item btn btn-link">Выйти</button>
+                                </form>
+                            </li>
+                       </ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<div>
+		<p class="form-label h3">Информация об аккаунте:</p>
+	</div>
+	<div class="row g-0">
+	    <div class="col p-0">
+	        <span class="form-label fw-bold">Имя пользователя: </span>
+	        <span th:text="${person.username}" />
+	    </div>
+	</div>
+	<div class="row g-0 mt-2">
+	    <div class="col p-0">
+	        <span class="form-label fw-bold">Почта: </span>
+	        <span th:text="${person.email}" />
+	    </div>
+	</div>
+	<div>
+		<p class="form-label h3 mt-4">Изменить информацию об аккаунте: </p>
+		<form th:method="PATCH" th:action="@{/main/settings/{username}(username=${person.username})}" th:object="${person}">
+		<label for="username" class="form-label">Введите новое имя пользователя: </label>
+		<input type="text" th:field="*{username}" id="username" class="form-control" />
+		<br/>
+		<label for="email" class="form-label">Введите новый email: </label>
+		<input type="email" th:field="*{email}" id="email" class="form-control" />
+		<br />
+		<label for="password" class="form-label">Введите новый пароль: </label>
+		<input type="password" th:field="*{password}" id=password class="form-control" />
+		<br />
+		<input type="submit" value="Изменить" class="btn btn-success" />
+	</form>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
