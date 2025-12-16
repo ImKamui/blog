@@ -42,6 +42,11 @@ public class PeopleService {
 		return foundPerson.orElse(null);
 	}
 	
+	public List<Person> findByUsernameContainingIgnoreCase(String username) 
+	{
+        return peopleRepository.findByUsernameContainingIgnoreCase(username);
+    }
+	
 	@Transactional
 	public void save(Person person)
 	{

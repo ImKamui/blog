@@ -1,5 +1,6 @@
 package danil.blog.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,6 @@ import danil.blog.models.Person;
 public interface PeopleRepository extends JpaRepository<Person, Integer>{
 
 	Optional<Person> findByUsername(String username);
+	List<Person> findByUsernameContainingIgnoreCase(String username);
 	
 }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import danil.blog.models.Person;
 import danil.blog.models.Post;
@@ -156,9 +157,9 @@ public class MainController {
 		{
 			PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
 			Person updPerson = personDetails.getPerson();
-			String username = updPerson.getUsername();
+			//String username = updPerson.getUsername();
 			
-			peopleService.updateByUsername(person, username);
+			peopleService.updateByUsername(person, updPerson.getUsername());
 			new SecurityContextLogoutHandler().logout(request, response, authentication);
 			return "redirect:/auth/login";
 		}
@@ -174,5 +175,63 @@ public class MainController {
 	{
 		postService.delete(id);
 		return "redirect:/main/my_posts";
+	}
+	
+	@GetMapping("/admin")
+	public String admin(Model model)
+	{
+		model.addAttribute("people", peopleService.findAll());
+		return "main/admin";
+	}
+	
+	@GetMapping("/admin/search")
+	public String search(@RequestParam("query") String query, Model model)
+	{
+		if (query != null && !query.trim().isEmpty())
+		{
+			List<Person> searchResults = peopleService.findByUsernameContainingIgnoreCase(query);
+			model.addAttribute("searchResults", searchResults);
+		}
+		else
+		{
+			model.addAttribute("searchResults", peopleService.findAll());
+		}
+		return "main/admin";
+	}
+	
+	@DeleteMapping("/admin/{id}")
+	public String deleteUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes)
+	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		PersonDetails personDetails = (PersonDetails)authentication.getPrincipal();
+		Person person = personDetails.getPerson();
+		if (id == person.getId())
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Вы не можете удалить себя.");
+			return "redirect:/main/admin";
+		}
+		Person userToDelete = peopleService.findOne(id);
+		if ("ADMIN".equals(userToDelete.getRole()))
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Пользователь является администратором.");
+			return "redirect:/main/admin";
+		}
+		
+		try
+		{
+			peopleService.delete(id);
+		}
+		catch(Exception e)
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления.");
+		}
+		return "redirect:/main/admin";
+	}
+	
+	@DeleteMapping("/{id}")
+	public String deleteAnyPost(@PathVariable("id") int id)
+	{
+		postService.delete(id);
+		return "redirect:/main";
 	}
 }

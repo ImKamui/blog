@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Админ-панель</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg bg-body-tertiary rounded">
+		<div class="collapse navbar-collapse justify-content-md-center" id="navbar">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main}">Главная</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main/new_post}">Создать пост</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
+				</li>
+				<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle active" th:href="@{/main}" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Профиль</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                            	<a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
+                            </li>
+                            <th:block sec:authorize="hasRole('ADMIN')">
+                            	<li>
+                            		<a th:href="@{/main/admin}" class="dropdown-item btn btn-link">Админ-панель</a>
+                            	</li>
+                            </th:block>
+                            <li>
+                                <form th:action="@{/logout}" method="post" style="display: inline;">
+                                    <button type="submit" class="dropdown-item btn btn-link">Выйти</button>
+                                </form>
+                            </li>
+                       </ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	
+	<div class="container mt-3 mb-3">
+        <form th:action="@{/main/admin/search}" method="get">
+            <div class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Поиск по имени пользователя..." />
+                <button class="btn btn-outline-secondary" type="submit">Найти</button>
+            </div>
+        </form>
+    </div>
+	<div class="row g-0">
+		<div class="col-1 px-5 card card-title mb-2 me-3">
+			<p class="text-center">ID</p>
+		</div>
+		<div class="col-2 px-0 card card-title mb-2 me-3">
+			<p class="text-center">Имя пользователя</p>
+		</div>
+		<div class="col-2 px-0 card card-title mb-2">
+			<p class="text-center">Роль</p>
+		</div>
+	</div>
+	
+	<div th:each="person : ${people}">
+		<div class="row g-0">
+			<div class="col-1 px-5 card card-text mb-2 me-3">
+				<p th:text="${person.id}" class="text-center"/>
+			</div>
+			<div class="col-2 px-5 card card-text mb-2 me-3">
+				<p th:text="${person.username}" class="text-center" />
+			</div>
+			<div class="col-2 px-5 card card-text mb-2">
+				<p th:text="${person.role}" class="text-center" />
+			</div>
+			<div class="col-1 d-flex justify-content-end">
+				<form th:method="DELETE" th:action="@{/main/admin/{id}(id=${person.id})}" class="mb-0">
+					<input type="submit" value="X" class="btn btn-danger btn-sm" />
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<div th:if="${searchResults != null}">
+        <div th:each="person : ${searchResults}">
+            <div class="row g-0">
+                <div class="col-1 px-5 card card-text mb-2 me-3">
+                    <p th:text="${person.id}" class="text-center" />
+                </div>
+                <div class="col-2 px-5 card card-text mb-2 me-3">
+					<p th:text="${person.username}" class="text-center" />
+				</div>
+				<div class="col-2 px-5 card card-text mb-2">
+					<p th:text="${person.role}" class="text-center" />
+				</div>
+                <div class="col-1 d-flex justify-content-end">
+					<form th:method="DELETE" th:action="@{/main/admin/{id}(id=${person.id})}" class="mb-0">
+						<input type="submit" value="X" class="btn btn-danger btn-sm" />
+					</form>
+				</div>
+            </div>
+        </div>
+    </div>
+	
+	<div th:unless="${searchResults != null}">
+		<div th:each="person : ${searchResults}">
+			<div class="row g-0">
+				<div class="col-1 px-5 card card-text mb-2 me-3">
+					<p th:text="${person.id}" class="text-center"/>
+				</div>
+				<div class="col-2 px-5 card card-text mb-2 me-3">
+					<p th:text="${person.username}" class="text-center" />
+				</div>
+				<div class="col-2 px-5 card card-text mb-2">
+					<p th:text="${person.role}" class="text-center" />
+				</div>
+				<div class="col-1 d-flex justify-content-end">
+					<form th:method="DELETE" th:action="@{/main/admin/{id}(id=${person.id})}" class="mb-0">
+						<input type="submit" value="X" class="btn btn-danger btn-sm" />
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+	
+
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
