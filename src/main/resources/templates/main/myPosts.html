@@ -25,7 +25,7 @@
                             <li>
                             	<a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
                             </li>
-                            <th:block sec:authorize="hasRole('ADMIN')">
+                            <th:block sec:authorize="hasRole('ADMIN') or hasRole('KING_ADMIN')">
                             	<li>
                             		<a th:href="@{/main/admin}" class="dropdown-item btn btn-link">Админ-панель</a>
                             	</li>
@@ -55,7 +55,7 @@
 				</th:block>
 			</div>
 			<div th:if="${post != null and post.postImage != null and post.postImage.length > 0}" class="mt-3">
-					<img th:src="@{/main/image/{id}(id=${post.postId})}" alt="Фото поста" class="img-fluid" />
+					<img th:src="@{/main/image/{id}(id=${post.postId})}" alt="Фото поста" class="img-fluid rounded w-25 h-50 ms-3 mb-3" />
 			</div>
 		</div>
 	</div>

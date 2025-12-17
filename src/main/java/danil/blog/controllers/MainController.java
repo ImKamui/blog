@@ -211,9 +211,9 @@ public class MainController {
 			return "redirect:/main/admin";
 		}
 		Person userToDelete = peopleService.findOne(id);
-		if ("ADMIN".equals(userToDelete.getRole()))
+		if ("ADMIN".equals(userToDelete.getRole()) || "KING_ADMIN".equals(userToDelete.getRole()))
 		{
-			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Пользователь является администратором.");
+			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Пользователь является администратором или высшим администратором.");
 			return "redirect:/main/admin";
 		}
 		
@@ -233,5 +233,30 @@ public class MainController {
 	{
 		postService.delete(id);
 		return "redirect:/main";
+	}
+	
+	@PatchMapping("/admin/setAdmin/{id}")
+	public String setAdmin(@PathVariable("id") int id)
+	{
+		peopleService.updateRoleById(id, "ADMIN");
+		return "redirect:/main/admin";
+	}
+	
+	@PatchMapping("/admin/setUser/{id}")
+	public String setUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes, @AuthenticationPrincipal PersonDetails personDetails)
+	{
+		Person thisPerson = personDetails.getPerson();
+		if (id == thisPerson.getId())
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка. Вы не можете снять себя с поста администратора.");
+			return "redirect:/main/admin";
+		}
+		if ("KING_ADMIN".equals(peopleService.findOne(id).getRole()))
+		{
+			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка. Вы не можете снять с поста высшего администратора.");
+			return "redirect:/main/admin";
+		}
+		peopleService.updateRoleById(id, "USER");
+		return "redirect:/main/admin";
 	}
 }

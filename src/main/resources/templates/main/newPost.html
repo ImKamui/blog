@@ -26,7 +26,7 @@
                             <li>
                             	<a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
                             </li>
-                            <th:block sec:authorize="hasRole('ADMIN')">
+                            <th:block sec:authorize="hasRole('ADMIN') or hasRole('KING_ADMIN')">
                             	<li>
                             		<a th:href="@{/main/admin}" class="dropdown-item btn btn-link">Админ-панель</a>
                             	</li>

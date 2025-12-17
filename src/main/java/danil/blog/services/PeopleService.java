@@ -74,6 +74,12 @@ public class PeopleService {
 	}
 	
 	@Transactional
+	public void updateRoleById(int id, String role)
+	{
+		peopleRepository.updateRoleById(id, role);
+	}
+	
+	@Transactional
 	public void delete(int id)
 	{
 		peopleRepository.deleteById(id);

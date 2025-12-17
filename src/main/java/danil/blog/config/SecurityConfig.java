@@ -28,8 +28,8 @@ public class SecurityConfig {
 	{
 		http.authorizeHttpRequests(authz -> authz
 				.requestMatchers("/auth/login", "/auth/registration").permitAll()
-				.requestMatchers("/main/admin").hasRole("ADMIN")
-				.anyRequest().hasAnyRole("USER", "ADMIN")
+				.requestMatchers("/main/admin").hasAnyRole("ADMIN", "KING_ADMIN")
+				.anyRequest().hasAnyRole("USER", "ADMIN", "KING_ADMIN")
 				
 			)
 			.formLogin(form -> form
