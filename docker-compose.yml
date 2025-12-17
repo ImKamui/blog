@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: blog
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Danil122003
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -18,14 +18,12 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/blog
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=Danil122003
+      - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
       - SPRING_FLYWAY_ENABLED=true
     ports:
       - "8081:8081"
-    # volumes:
-    #   - ./application-docker.properties:/app/application.properties # (Опционально) если хотите внешний конфиг
 
 volumes:
   postgres_data:
