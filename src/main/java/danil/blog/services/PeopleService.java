@@ -60,6 +60,7 @@ public class PeopleService {
 		person.setUsername(updatedPerson.getUsername());
 		person.setEmail(updatedPerson.getEmail());
 		person.setPassword(passwordEncoder.encode(updatedPerson.getPassword()));
+		person.setAvatar(updatedPerson.getAvatar());
 		peopleRepository.save(person);
 	}
 	
@@ -70,6 +71,7 @@ public class PeopleService {
 		person.setUsername(updatedPerson.getUsername());
 		person.setEmail(updatedPerson.getEmail());
 		person.setPassword(passwordEncoder.encode(updatedPerson.getPassword()));
+		person.setAvatar(updatedPerson.getAvatar());
 		peopleRepository.save(person);
 	}
 	

@@ -20,7 +20,18 @@
 					<a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
 				</li>
 				<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle active" th:href="@{/main/my_posts}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Профиль</a>
+					<a class="nav-link dropdown-toggle active" id="navbarDropdownFriends" role="button" data-bs-toggle="dropdown">Друзья</a>
+						<ul class="dropdown-menu">
+							<li>
+								<a th:href="@{/main/friends/my}" class="dropdown-item btn btn-link">Мои друзья</a>
+							</li>
+							<li>
+								<a th:href="@{/main/friends/find}" class="dropdown-item btn btn-link">Найти друзей</a>
+							</li>
+						</ul>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle active" th:href="@{/main/my_posts}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Профиль</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li>
                             	<a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>

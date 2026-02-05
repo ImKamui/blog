@@ -20,6 +20,17 @@
 					<a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
 				</li>
 				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle active" id="navbarDropdownFriends" role="button" data-bs-toggle="dropdown">Друзья</a>
+						<ul class="dropdown-menu">
+							<li>
+								<a th:href="@{/main/friends/my}" class="dropdown-item btn btn-link">Мои друзья</a>
+							</li>
+							<li>
+								<a th:href="@{/main/friends/find}" class="dropdown-item btn btn-link">Найти друзей</a>
+							</li>
+						</ul>
+				</li>
+				<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle active" th:href="@{/main}" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Профиль</a>
                         <ul class="dropdown-menu">
                             <li>
@@ -73,7 +84,7 @@
 				<p th:text="${person.role}" class="text-center" />
 			</div>
 			<div class="col-1 d-flex justify-content-end">
-				<form th:method="DELETE" th:action="@{/main/admin/{id}(id=${person.id})}" class="mb-0">
+				<form th:method="DELETE" th:action="@{/main/admin/user/{id}(id=${person.id})}" class="mb-0">
 					<input type="submit" value="X" class="btn btn-danger btn-sm" />
 				</form>
 			</div>
@@ -107,7 +118,7 @@
 					<p th:text="${person.role}" class="text-center" />
 				</div>
                 <div class="col-1 d-flex justify-content-end">
-					<form th:method="DELETE" th:action="@{/main/admin/{id}(id=${person.id})}" class="mb-0">
+					<form th:method="DELETE" th:action="@{/main/admin/user/{id}(id=${person.id})}" class="mb-0">
 						<input type="submit" value="X" class="btn btn-danger btn-sm" />
 					</form>
 				</div>
@@ -142,7 +153,7 @@
 					<p th:text="${person.role}" class="text-center" />
 				</div>
 				<div class="col-1 d-flex justify-content-end">
-					<form th:method="DELETE" th:action="@{/main/admin/{id}(id=${person.id})}" class="mb-0">
+					<form th:method="DELETE" th:action="@{/main/admin/user/{id}(id=${person.id})}" class="mb-0">
 						<input type="submit" value="X" class="btn btn-danger btn-sm" />
 					</form>
 				</div>

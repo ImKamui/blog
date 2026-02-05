@@ -131,45 +131,6 @@ public class MainController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	
-	@GetMapping("/settings")
-	public String settings(Model model, @AuthenticationPrincipal PersonDetails personDetails)
-	{
-		if (personDetails == null)
-		{
-			return "redirect:/auth/login";
-		}
-		Person person = personDetails.getPerson();
-		model.addAttribute("person", peopleService.findOneByUsername(person.getUsername()));
-		return "main/settings";
-	}
-	
-	@PatchMapping("/settings/{username}")
-	public String updatePerson(@ModelAttribute("person") Person person, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response)
-	{
-		if (bindingResult.hasErrors())
-		{
-			bindingResult.addError(new ObjectError("person", "Ошибка изменения данных"));
-			return "main/settings";
-		}
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof PersonDetails)
-		{
-			PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
-			Person updPerson = personDetails.getPerson();
-			//String username = updPerson.getUsername();
-			
-			peopleService.updateByUsername(person, updPerson.getUsername());
-			new SecurityContextLogoutHandler().logout(request, response, authentication);
-			return "redirect:/auth/login";
-		}
-		else
-		{
-			return "redirect:/auth/login";
-		}
-		
-	}
-	
 	@DeleteMapping("/myPosts/{id}")
 	public String delete(@PathVariable("id") int id)
 	{
@@ -177,86 +138,19 @@ public class MainController {
 		return "redirect:/main/my_posts";
 	}
 	
-	@GetMapping("/admin")
-	public String admin(Model model)
-	{
-		model.addAttribute("people", peopleService.findAll());
-		return "main/admin";
-	}
 	
-	@GetMapping("/admin/search")
-	public String search(@RequestParam("query") String query, Model model)
+	@GetMapping("/avatar/{id}")
+	@ResponseBody
+	public ResponseEntity<byte[]> getAvatar(@PathVariable int id)
 	{
-		if (query != null && !query.trim().isEmpty())
+		Person person = peopleService.findOne(id);
+		if (person != null && person.getAvatar() != null)
 		{
-			List<Person> searchResults = peopleService.findByUsernameContainingIgnoreCase(query);
-			model.addAttribute("searchResults", searchResults);
+			return ResponseEntity.ok()
+					.contentType(MediaType.IMAGE_JPEG)
+					.contentType(MediaType.IMAGE_PNG)
+					.body(person.getAvatar());
 		}
-		else
-		{
-			model.addAttribute("searchResults", peopleService.findAll());
-		}
-		return "main/admin";
-	}
-	
-	@DeleteMapping("/admin/{id}")
-	public String deleteUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes)
-	{
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		PersonDetails personDetails = (PersonDetails)authentication.getPrincipal();
-		Person person = personDetails.getPerson();
-		if (id == person.getId())
-		{
-			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Вы не можете удалить себя.");
-			return "redirect:/main/admin";
-		}
-		Person userToDelete = peopleService.findOne(id);
-		if ("ADMIN".equals(userToDelete.getRole()) || "KING_ADMIN".equals(userToDelete.getRole()))
-		{
-			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Пользователь является администратором или высшим администратором.");
-			return "redirect:/main/admin";
-		}
-		
-		try
-		{
-			peopleService.delete(id);
-		}
-		catch(Exception e)
-		{
-			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления.");
-		}
-		return "redirect:/main/admin";
-	}
-	
-	@DeleteMapping("/{id}")
-	public String deleteAnyPost(@PathVariable("id") int id)
-	{
-		postService.delete(id);
-		return "redirect:/main";
-	}
-	
-	@PatchMapping("/admin/setAdmin/{id}")
-	public String setAdmin(@PathVariable("id") int id)
-	{
-		peopleService.updateRoleById(id, "ADMIN");
-		return "redirect:/main/admin";
-	}
-	
-	@PatchMapping("/admin/setUser/{id}")
-	public String setUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes, @AuthenticationPrincipal PersonDetails personDetails)
-	{
-		Person thisPerson = personDetails.getPerson();
-		if (id == thisPerson.getId())
-		{
-			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка. Вы не можете снять себя с поста администратора.");
-			return "redirect:/main/admin";
-		}
-		if ("KING_ADMIN".equals(peopleService.findOne(id).getRole()))
-		{
-			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка. Вы не можете снять с поста высшего администратора.");
-			return "redirect:/main/admin";
-		}
-		peopleService.updateRoleById(id, "USER");
-		return "redirect:/main/admin";
+		return ResponseEntity.notFound().build();
 	}
 }
