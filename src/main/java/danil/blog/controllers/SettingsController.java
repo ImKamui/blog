@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,13 +38,16 @@ public class SettingsController {
 
 	private final PeopleService peopleService;
 	private final PostService postService;
-	
-	
+
+	private final PasswordEncoder passwordEncoder;
+
 	@Autowired
-	public SettingsController(PeopleService peopleService, PostService postService, PersonDetailsService personDetailsService) {
+	public SettingsController(PeopleService peopleService, PostService postService, PersonDetailsService personDetailsService,
+							  PasswordEncoder passwordEncoder) {
 		this.peopleService = peopleService;
 		this.postService = postService;
 		this.personDetailsService = personDetailsService;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@GetMapping("")
@@ -86,6 +91,18 @@ public class SettingsController {
             {
                 person.setAvatar(updPerson.getAvatar());
             }
+			if (person.getUsername().isEmpty())
+			{
+				person.setUsername(updPerson.getUsername());
+			}
+			if (person.getEmail().isEmpty())
+			{
+				person.setEmail(updPerson.getEmail());
+			}
+			if (person.getPassword().isEmpty())
+			{
+				person.setPassword(updPerson.getPassword());
+			}
 			peopleService.updateByUsername(person, updPerson.getUsername());
 			new SecurityContextLogoutHandler().logout(request, response, authentication);
 			return "redirect:/auth/login";

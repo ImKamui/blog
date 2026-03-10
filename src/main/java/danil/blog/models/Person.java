@@ -60,13 +60,13 @@ public class Person {
 	@OneToMany(mappedBy = "owner")
 	private List<Post> posts;
 	
-	@ManyToMany
-	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "whom")},
-	inverseJoinColumns = {@JoinColumn(name = "who")})
-	private Set<Person> friends = new HashSet();
-	
-	@ManyToMany
-	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "who")},
-	inverseJoinColumns = {@JoinColumn(name = "whom")})
-	private Set<Person> users = new HashSet();
+//	@ManyToMany
+//	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "whom")},
+//	inverseJoinColumns = {@JoinColumn(name = "who")})
+//	private Set<Person> friends = new HashSet();
+//
+//	@ManyToMany
+//	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "who")},
+//	inverseJoinColumns = {@JoinColumn(name = "whom")})
+//	private Set<Person> users = new HashSet();
 }
