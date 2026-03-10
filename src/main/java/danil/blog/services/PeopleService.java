@@ -70,7 +70,7 @@ public class PeopleService {
 		Person person = peopleRepository.findByUsername(username).orElse(null);
 		person.setUsername(updatedPerson.getUsername());
 		person.setEmail(updatedPerson.getEmail());
-		person.setPassword(passwordEncoder.encode(updatedPerson.getPassword()));
+		person.setPassword(updatedPerson.getPassword());
 		person.setAvatar(updatedPerson.getAvatar());
 		peopleRepository.save(person);
 	}
