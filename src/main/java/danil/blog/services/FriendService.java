@@ -77,14 +77,12 @@ public class FriendService {
             if (friendshipOpt.isPresent())
             {
                 Friend friendship = friendshipOpt.get();
-                int actualSenderId = Math.min(friendship.getUser().getId(), friendship.getFriend().getId());
-                int actualReceivedId = Math.max(friendship.getUser().getId(), friendship.getFriend().getId());
 
-                if (actualSenderId == userId)
+                if (friendship.getUser().getId() == userId)
                 {
                     sentStatus = friendship.getStatus();
                 }
-                else if (actualReceivedId == userId)
+                else if (friendship.getFriend().getId() == userId)
                 {
                     receivedStatus = friendship.getStatus();
                 }
@@ -99,40 +97,37 @@ public class FriendService {
 
     public void sendRequest(Person user, Person friend)
     {
-        Person pers_user = user.getId() < friend.getId() ? user : friend;
-        Person pers_friend = user.getId() < friend.getId() ? friend : user;
+//        Person pers_user = user.getId() < friend.getId() ? user : friend;
+//        Person pers_friend = user.getId() < friend.getId() ? friend : user;
 
         Friend friends = new Friend();
-        friends.setUser(pers_user);
-        friends.setFriend(pers_friend);
+        friends.setUser(user);
+        friends.setFriend(friend);
         friends.setStatus(FriendStatus.PENDING);
         friendRepository.save(friends);
 
     }
 
-    public List<FriendDto> findByUsernameContainingIgnoreCase(String username)
+    public List<FriendDto> findByUsernameContainingIgnoreCase(String username, Person currentUser)
     {
         List<Person> allWhoContains = peopleService.findByUsernameContainingIgnoreCase(username);
-        Person foundFriend = peopleService.findOneByUsername(username);
         List<FriendDto> result = new ArrayList<>();
         for (Person user : allWhoContains)
         {
             if (user.getUsername().equalsIgnoreCase(username)) continue;
 
-            Optional<Friend> friendshipOpt = friendRepository.findInvites(user.getId(), foundFriend.getId());
+            Optional<Friend> friendshipOpt = friendRepository.findInvites(user.getId(), currentUser.getId());
             FriendStatus sentStatus = null;
             FriendStatus receivedStatus = null;
             if (friendshipOpt.isPresent())
             {
                 Friend friendship = friendshipOpt.get();
-                int actualSenderId = Math.min(friendship.getUser().getId(), friendship.getFriend().getId());
-                int actualReceivedId = Math.max(friendship.getUser().getId(), friendship.getFriend().getId());
 
-                if (actualSenderId == foundFriend.getId())
+                if (friendship.getUser().getId() == currentUser.getId())
                 {
                     sentStatus = friendship.getStatus();
                 }
-                else if(actualReceivedId == foundFriend.getId())
+                else if(friendship.getFriend().getId() == currentUser.getId())
                 {
                     receivedStatus = friendship.getStatus();
                 }
