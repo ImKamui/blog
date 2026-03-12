@@ -16,7 +16,6 @@ import danil.blog.repositories.PostRepository;
 public class PostService {
 
     private final PeopleRepository peopleRepository;
-
 	private final PostRepository postRepository;
 	
 	@Autowired

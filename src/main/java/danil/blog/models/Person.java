@@ -4,22 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -59,14 +48,10 @@ public class Person {
 	
 	@OneToMany(mappedBy = "owner")
 	private List<Post> posts;
-	
-//	@ManyToMany
-//	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "whom")},
-//	inverseJoinColumns = {@JoinColumn(name = "who")})
-//	private Set<Person> friends = new HashSet();
-//
-//	@ManyToMany
-//	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "who")},
-//	inverseJoinColumns = {@JoinColumn(name = "whom")})
-//	private Set<Person> users = new HashSet();
+
+    @OneToMany(mappedBy = "user")
+    private List<Friend> users;
+
+    @OneToMany(mappedBy = "friend")
+    private List<Friend> friends;
 }
