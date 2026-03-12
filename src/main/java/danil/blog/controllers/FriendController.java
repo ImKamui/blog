@@ -30,6 +30,7 @@ public class FriendController {
     public String getAllUsers(Model model, Authentication auth) {
         Person user = peopleService.findOneByUsername(auth.getName());
         List<FriendDto> allUsers = friendService.getAllUsers(user.getId());
+        System.out.println(auth.getName());
         model.addAttribute("users", allUsers);
         return "friends/friends";
     }
@@ -37,7 +38,8 @@ public class FriendController {
     @GetMapping("/search")
     public String search(@RequestParam("query") String query, Model model, Authentication auth) {
         if (query != null && !query.trim().isEmpty()) {
-            List<FriendDto> searchResults = friendService.findByUsernameContainingIgnoreCase(query);
+            Person curUser = peopleService.findOneByUsername(auth.getName());
+            List<FriendDto> searchResults = friendService.findByUsernameContainingIgnoreCase(query, curUser);
             model.addAttribute("searchResults", searchResults);
         } else {
             Person user = peopleService.findOneByUsername(auth.getName());
@@ -50,6 +52,7 @@ public class FriendController {
     @PostMapping("/add")
     public String sendRequest(int friendId, Authentication auth) {
         Person user = peopleService.findOneByUsername(auth.getName());
+        System.out.println(auth.getName());
         Person friend = peopleService.findOne(friendId);
         friendService.sendRequest(user, friend);
         return "redirect:/main/friends";
