@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск друзей</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary rounded">
+    <div class="collapse navbar-collapse justify-content-md-center" id="navbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/main}">Главная</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/main/new_post}">Создать пост</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" id="navbarDropdownFriends" role="button" data-bs-toggle="dropdown">Друзья</a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a th:href="@{/main/friends/my}" class="dropdown-item btn btn-link">Мои друзья</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/main/friends}" class="dropdown-item btn btn-link">Найти друзей</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" th:href="@{/main}" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Профиль</a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
+                    </li>
+                    <th:block sec:authorize="hasRole('ADMIN') or hasRole('KING_ADMIN')">
+                        <li>
+                            <a th:href="@{/main/admin}" class="dropdown-item btn btn-link">Админ-панель</a>
+                        </li>
+                    </th:block>
+                    <li>
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="dropdown-item btn btn-link">Выйти</button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-3 mb-3">
+    <form th:action="@{/main/friends/search}" method="get">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Поиск по имени пользователя..." />
+            <button class="btn btn-outline-secondary" type="submit">Найти</button>
+        </div>
+    </form>
+</div>
+
+<div th:each="user : ${users}" class="card mb-2 p-2">
+    <div class="row g-2 align-items-center">
+        <div class="col-auto">
+            <th:block th:if="${user.avatar == null}">
+                <img src="/images/default_avatar.jpg" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;"/>
+            </th:block>
+            <th:block th:unless="${user.avatar == null}">
+                <img th:src="@{/main/avatar/{id}(id=${user.id})}" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;">
+            </th:block>
+        </div>
+
+        <div class="col-auto">
+            <div class="card bg-light border-0 h-100 d-flex align-items-center justify-content-center">
+                <p th:text="${user.username}" class="mb-0 text-center" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div th:if="${user.sentStatus == T(danil.blog.models.FriendStatus).PENDING}">
+                <button class="btn btn-secondary btn-sm" disabled>Запрос отправлен</button>
+            </div>
+            <div th:if="${user.receivedStatus == T(danil.blog.models.FriendStatus).ACCEPTED || user.sentStatus == T(danil.blog.models.FriendStatus).ACCEPTED}">
+                <button class="btn btn-success btn-sm" disabled>В друзьях</button>
+            </div>
+            <div th:if="${user.receivedStatus == T(danil.blog.models.FriendStatus).PENDING}"
+                 th:unless="${user.sentStatus == T(danil.blog.models.FriendStatus).PENDING}">
+                <div class="d-flex flex-column gap-1">
+                    <form th:action="@{/main/friends/accept}" method="post" class="d-inline-block">
+                        <input type="hidden" name="friendId" th:value="${user.id}" />
+                        <button class="btn btn-success btn-sm">Принять</button>
+                    </form>
+                    <form th:action="@{/main/friends/reject}" method="post" class="d-inline-block">
+                        <input type="hidden" name="friendId" th:value="${user.id}" />
+                        <button class="btn btn-danger btn-sm">Отклонить</button>
+                    </form>
+                </div>
+            </div>
+            <div th:if="${user.sentStatus != T(danil.blog.models.FriendStatus).PENDING &&
+                  user.receivedStatus != T(danil.blog.models.FriendStatus).PENDING &&
+                  user.sentStatus != T(danil.blog.models.FriendStatus).ACCEPTED &&
+                  user.receivedStatus != T(danil.blog.models.FriendStatus).ACCEPTED}">
+                <form th:action="@{/main/friends/add}" method="post">
+                    <input type="hidden" name="friendId" th:value="${user.id}" />
+                    <button class="btn btn-primary btn-sm">Добавить в друзья</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:if="${searchResults != null}">
+    <div th:each="user : ${searchResults}">
+        <div class="row g-0">
+            <th:block th:if="${user.avatar == null}">
+                <img src="/images/default_avatar.jpg" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;"/>
+            </th:block>
+            <th:block th:unless="${user.avatar == null}">
+                <img th:src="@{/main/avatar/{id}(id=${user.id})}" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;">
+            </th:block>
+            <div class="col-2 px-5 card card-text mb-2 me-3 ms-2">
+                <p th:text="${user.username}" class="text-center" />
+            </div>
+            <div class="col-2 mb-2 me-3 ms-2">
+                <th:block th:if="${user.status == null}">
+                    <form th:action="@{/main/friends/add}" method="post">
+                        <input type="hidden" name="friendId" th:value="${user.id}" />
+                        <button class="btn btn-primary btn-sm">Добавить в друзья</button>
+                    </form>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:unless="${searchResults != null}">
+    <div th:each="user : ${searchResults}">
+        <div class="row g-0">
+            <th:block th:if="${user.avatar == null}">
+                <img src="/images/default_avatar.jpg" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;"/>
+            </th:block>
+            <th:block th:unless="${user.avatar == null}">
+                <img th:src="@{/main/avatar/{id}(id=${user.id})}" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;">
+            </th:block>
+            <div class="col-2 px-5 card card-text mb-2 me-3 ms-2">
+                <p th:text="${user.username}" class="text-center" />
+            </div>
+            <div class="col-2 mb-2 me-3 ms-2">
+                <th:block th:if="${user.status == null}">
+                    <form th:action="@{/main/friends/add}" method="post">
+                        <input type="hidden" name="friendId" th:value="${user.id}" />
+                        <button class="btn btn-primary btn-sm">Добавить в друзья</button>
+                    </form>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
