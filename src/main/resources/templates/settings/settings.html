@@ -89,7 +89,7 @@
 			<input type="email" th:field="*{email}" id="email" class="form-control w-50 ms-2" />
 			<br />
 			<label for="password" class="form-label ms-2">Введите новый пароль: </label>
-			<input type="password" th:field="*{password}" id="password" class="form-control w-50 ms-2" />
+			<input type="password" autocomplete="new-password" th:field="*{password}" id="password" class="form-control w-50 ms-2" />
 			<br />
 			<label for="avatar" class="from-label ms-2">Выберите изображение для фото профиля: </label>
 			<input type="file" id="avatar" name="file" accept="image/*" class="form-control w-50 ms-2" />

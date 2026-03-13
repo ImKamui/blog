@@ -55,6 +55,11 @@ public class FriendService {
         friendRepository.deleteById(id);
     }
 
+    public void deleteByFriendIdAndUserId(int friendId, int userId)
+    {
+        friendRepository.deleteByFriendIdAndUserId(friendId, userId);
+    }
+
     public void deleteByUser(Friend user)
     {
         friendRepository.delete(user);
@@ -162,6 +167,27 @@ public class FriendService {
                 friendRepository.delete(friendship);
             }
         }
+    }
+
+    public List<FriendDto> findUserFriends(int userId)
+    {
+        List<Friend> friendsList = friendRepository.findUserFriends(userId);
+        List<FriendDto> result = new ArrayList<>();
+
+        for (Friend friend : friendsList)
+        {
+            Person friendPerson;
+            if (friend.getUser().getId() == userId)
+            {
+                friendPerson = friend.getFriend();
+            }
+            else
+            {
+                friendPerson = friend.getUser();
+            }
+            result.add(new FriendDto(friendPerson.getId(), friendPerson.getUsername(), friendPerson.getAvatar(), null ,null));
+        }
+        return result;
     }
 
 }

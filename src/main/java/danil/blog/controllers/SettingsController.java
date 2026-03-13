@@ -99,10 +99,21 @@ public class SettingsController {
 			{
 				person.setEmail(updPerson.getEmail());
 			}
-			if (person.getPassword().isEmpty())
+			if (person.getPassword().isEmpty() || person.getPassword() == null)
 			{
-				person.setPassword(updPerson.getPassword());
+                person.setPassword(updPerson.getPassword());
 			}
+            else
+            {
+                if (passwordEncoder.matches(person.getPassword(), updPerson.getPassword()))
+                {
+                    person.setPassword(updPerson.getPassword());
+                }
+                else
+                {
+                    person.setPassword(passwordEncoder.encode(updPerson.getPassword()));
+                }
+            }
 			peopleService.updateByUsername(person, updPerson.getUsername());
 			new SecurityContextLogoutHandler().logout(request, response, authentication);
 			return "redirect:/auth/login";
