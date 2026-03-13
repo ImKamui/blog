@@ -23,7 +23,7 @@
                 <a class="nav-link dropdown-toggle active" id="navbarDropdownFriends" role="button" data-bs-toggle="dropdown">Друзья</a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a th:href="@{/main/friends/my}" class="dropdown-item btn btn-link">Мои друзья</a>
+                        <a th:href="@{/main/friends/my-friends}" class="dropdown-item btn btn-link">Мои друзья</a>
                     </li>
                     <li>
                         <a th:href="@{/main/friends}" class="dropdown-item btn btn-link">Найти друзей</a>
@@ -87,11 +87,11 @@
             <div th:if="${user.receivedStatus == T(danil.blog.models.FriendStatus).PENDING}"
                  th:unless="${user.sentStatus == T(danil.blog.models.FriendStatus).PENDING}">
                 <div class="d-flex flex-column gap-1">
-                    <form th:action="@{/main/friends/accept}" method="post" class="d-inline-block">
+                    <form th:action="@{/main/friends/accept}" th:method="patch" class="d-inline-block">
                         <input type="hidden" name="friendId" th:value="${user.id}" />
                         <button class="btn btn-success btn-sm">Принять</button>
                     </form>
-                    <form th:action="@{/main/friends/reject}" method="post" class="d-inline-block">
+                    <form th:action="@{/main/friends/reject}" th:method="patch" class="d-inline-block">
                         <input type="hidden" name="friendId" th:value="${user.id}" />
                         <button class="btn btn-danger btn-sm">Отклонить</button>
                     </form>
@@ -101,7 +101,7 @@
                   user.receivedStatus != T(danil.blog.models.FriendStatus).PENDING &&
                   user.sentStatus != T(danil.blog.models.FriendStatus).ACCEPTED &&
                   user.receivedStatus != T(danil.blog.models.FriendStatus).ACCEPTED}">
-                <form th:action="@{/main/friends/add}" method="post">
+                <form th:action="@{/main/friends/add}" th:method="post">
                     <input type="hidden" name="friendId" th:value="${user.id}" />
                     <button class="btn btn-primary btn-sm">Добавить в друзья</button>
                 </form>

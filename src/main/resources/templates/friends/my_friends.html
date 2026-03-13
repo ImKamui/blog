@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск друзей</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary rounded">
+    <div class="collapse navbar-collapse justify-content-md-center" id="navbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/main}">Главная</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/main/new_post}">Создать пост</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/main/my_posts}">Мои посты</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" id="navbarDropdownFriends" role="button" data-bs-toggle="dropdown">Друзья</a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a th:href="@{/main/friends/my-friends}" class="dropdown-item btn btn-link">Мои друзья</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/main/friends}" class="dropdown-item btn btn-link">Найти друзей</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" th:href="@{/main}" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Профиль</a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a th:href="@{/main/settings}" class="dropdown-item btn btn-link">Настройки</a>
+                    </li>
+                    <th:block sec:authorize="hasRole('ADMIN') or hasRole('KING_ADMIN')">
+                        <li>
+                            <a th:href="@{/main/admin}" class="dropdown-item btn btn-link">Админ-панель</a>
+                        </li>
+                    </th:block>
+                    <li>
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="dropdown-item btn btn-link">Выйти</button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<div th:each="friend : ${friends}" class="card mb-2 p-2">
+    <div class="row g-2 align-items-center">
+        <div class="col-auto">
+            <th:block th:if="${friend.avatar == null}">
+                <img src="/images/default_avatar.jpg" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;"/>
+            </th:block>
+            <th:block th:unless="${friend.avatar == null}">
+                <img th:src="@{/main/avatar/{id}(id=${friend.id})}" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 40px; height: 40px; object-fit: cover;">
+            </th:block>
+        </div>
+
+        <div class="col-auto">
+            <div class="card bg-light border-0 h-100 d-flex align-items-center justify-content-center">
+                <p th:text="${friend.username}" class="mb-0 text-center" />
+            </div>
+        </div>
+        <div class="col-auto">
+            <div>
+                <form th:action="@{/main/friends/delete}" th:method="post">
+                    <input type="hidden" name="friendId" th:value="${friend.id}" />
+                    <button class="btn btn-danger btn-sm">Удалить из друзей</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
