@@ -53,6 +53,9 @@
 </nav>
 
 
+<th:block th:if="${friends.size  == 0}" >
+    <span class="ms-2">У вас пока нет друзей. Добавьте кого-нибудь в друзья!</span>
+</th:block>
 <div th:each="friend : ${friends}" class="card mb-2 p-2">
     <div class="row g-2 align-items-center">
         <div class="col-auto">
