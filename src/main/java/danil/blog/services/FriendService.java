@@ -1,6 +1,7 @@
 package danil.blog.services;
 
 import danil.blog.dto.FriendDto;
+import danil.blog.dto.PersonDto;
 import danil.blog.models.Friend;
 import danil.blog.models.FriendStatus;
 import danil.blog.models.Person;
@@ -67,9 +68,9 @@ public class FriendService {
 
     public List<FriendDto> getAllUsers(int userId)
     {
-        List<Person> persons = peopleService.findAll();
+        List<PersonDto> persons = peopleService.findAll();
         List<FriendDto> result = new ArrayList<>();
-        for (Person person : persons)
+        for (PersonDto person : persons)
         {
             if (person.getId() == userId)
             {
@@ -100,24 +101,25 @@ public class FriendService {
         return result;
     }
 
-    public void sendRequest(Person user, Person friend)
+    public void sendRequest(PersonDto user, PersonDto friend)
     {
 //        Person pers_user = user.getId() < friend.getId() ? user : friend;
 //        Person pers_friend = user.getId() < friend.getId() ? friend : user;
-
+        Person person_user = peopleService.findOneEntityById(user.getId());
+        Person person_frnd= peopleService.findOneEntityById(friend.getId());
         Friend friends = new Friend();
-        friends.setUser(user);
-        friends.setFriend(friend);
+        friends.setUser(person_user);
+        friends.setFriend(person_frnd);
         friends.setStatus(FriendStatus.PENDING);
         friendRepository.save(friends);
 
     }
 
-    public List<FriendDto> findByUsernameContainingIgnoreCase(String username, Person currentUser)
+    public List<FriendDto> findByUsernameContainingIgnoreCase(String username, PersonDto currentUser)
     {
-        List<Person> allWhoContains = peopleService.findByUsernameContainingIgnoreCase(username);
+        List<PersonDto> allWhoContains = peopleService.findByUsernameContainingIgnoreCase(username);
         List<FriendDto> result = new ArrayList<>();
-        for (Person user : allWhoContains)
+        for (PersonDto user : allWhoContains)
         {
             if (user.getUsername().equalsIgnoreCase(username)) continue;
 
@@ -189,5 +191,7 @@ public class FriendService {
         }
         return result;
     }
+
+
 
 }

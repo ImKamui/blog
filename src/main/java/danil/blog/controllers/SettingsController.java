@@ -1,5 +1,7 @@
 package danil.blog.controllers;
 
+import danil.blog.dto.PersonDto;
+import danil.blog.dto.ProfileUpdateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,8 @@ import danil.blog.services.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
+
 @Controller
 @RequestMapping("/main/settings")
 public class SettingsController {
@@ -58,77 +62,116 @@ public class SettingsController {
 			return "redirect:/auth/login";
 		}
 		Person person = personDetails.getPerson();
-		model.addAttribute("person", peopleService.findOneByUsername(person.getUsername()));
+		PersonDto personDto = peopleService.findOneByUsername(person.getUsername());
+		ProfileUpdateForm form = new ProfileUpdateForm();
+		form.setId(personDto.getId());
+		form.setUsername(personDto.getUsername());
+		form.setEmail(personDto.getEmail());
+		form.setAvatar(personDto.getAvatar());
+		model.addAttribute("form", form);
 		return "settings/settings";
 	}
 	
 	@PatchMapping("/{username}")
-	public String updatePerson(@ModelAttribute("person") Person person, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "file", required = false) MultipartFile file)
+	public String updatePerson(@ModelAttribute("form") ProfileUpdateForm form, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "file", required = false) MultipartFile file)
 	{
 		if (bindingResult.hasErrors()) {
             bindingResult.addError(new ObjectError("person", "Ошибка изменения данных"));
             return "settings/settings";
         }
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof PersonDetails)
-		{
-			PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
-			Person updPerson = personDetails.getPerson();
-            if (file != null && !file.isEmpty() && !file.getOriginalFilename().isEmpty())
-            {
-                try
-                {
-                    person.setAvatar(file.getBytes());
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                    bindingResult.addError(new ObjectError("file", "Ошибка загрузки файла"));
-                    return "settings/settings";
-                }
-            }
-            else
-            {
-                person.setAvatar(updPerson.getAvatar());
-            }
-			if (person.getUsername().isEmpty())
-			{
-				person.setUsername(updPerson.getUsername());
-			}
-			if (person.getEmail().isEmpty())
-			{
-				person.setEmail(updPerson.getEmail());
-			}
-			if (person.getPassword().isEmpty() || person.getPassword() == null)
-			{
-                person.setPassword(updPerson.getPassword());
-			}
-            else
-            {
-                if (passwordEncoder.matches(person.getPassword(), updPerson.getPassword()))
-                {
-                    person.setPassword(updPerson.getPassword());
-                }
-                else
-                {
-                    person.setPassword(passwordEncoder.encode(updPerson.getPassword()));
-                }
-            }
-			peopleService.updateByUsername(person, updPerson.getUsername());
-			new SecurityContextLogoutHandler().logout(request, response, authentication);
+		if (!(authentication.getPrincipal() instanceof PersonDetails personDetails)) {
 			return "redirect:/auth/login";
 		}
-		else
-		{
+
+		Person currentPerson = personDetails.getPerson();
+
+		Person updPerson = new Person();
+		updPerson.setId(currentPerson.getId());
+		updPerson.setUsername(!form.getUsername().isEmpty() ? form.getUsername() : currentPerson.getUsername());
+		updPerson.setEmail(!form.getEmail().isEmpty() ? form.getEmail():currentPerson.getEmail());
+		updPerson.setRole(currentPerson.getRole());
+		updPerson.setAvatar(form.getAvatar());
+		if (file != null && !file.isEmpty()) {
+			try {
+				updPerson.setAvatar(file.getBytes());
+			} catch (Exception ex){
+				bindingResult.addError(new ObjectError("file","Не удалось загрузить файл"));
+				return "settings/settings";
+			}
+		}
+		else {
+			updPerson.setAvatar(currentPerson.getAvatar());
+		}
+		if (form.getPassword() != null && !form.getPassword().isEmpty()) {
+			updPerson.setPassword(passwordEncoder.encode(form.getPassword()));
+		} else {
+			updPerson.setPassword(currentPerson.getPassword());
+		}
+		peopleService.updateByUsername(updPerson, currentPerson.getUsername());
+		if (!Objects.equals(updPerson.getPassword(), currentPerson.getPassword())) {
+			new SecurityContextLogoutHandler().logout(request,response ,SecurityContextHolder.getContext().getAuthentication());
 			return "redirect:/auth/login";
 		}
+		return "redirect:/main/settings";
+//		if (authentication != null && authentication.getPrincipal() instanceof PersonDetails personDetails)
+//		{
+//            Person updPerson = personDetails.getPerson();
+//            if (file != null && !file.isEmpty() && !file.getOriginalFilename().isEmpty())
+//            {
+//                try
+//                {
+//                    form.setAvatar(file.getBytes());
+//                }
+//                catch(Exception e)
+//                {
+//                    e.printStackTrace();
+//                    bindingResult.addError(new ObjectError("file", "Ошибка загрузки файла"));
+//                    return "settings/settings";
+//                }
+//            }
+//            else
+//            {
+//                form.setAvatar(updPerson.getAvatar());
+//            }
+//			if (form.getUsername().isEmpty())
+//			{
+//				form.setUsername(updPerson.getUsername());
+//			}
+//			if (form.getEmail().isEmpty())
+//			{
+//				form.setEmail(updPerson.getEmail());
+//			}
+//			if (form.getPassword().isEmpty() || form.getPassword() == null)
+//			{
+//                form.setPassword(updPerson.getPassword());
+//			}
+//            else
+//            {
+//                if (passwordEncoder.matches(form.getPassword(), updPerson.getPassword()))
+//                {
+//					form.setPassword(updPerson.getPassword());
+//                }
+//                else
+//                {
+//					form.setPassword(passwordEncoder.encode(updPerson.getPassword()));
+//                }
+//            }
+//			peopleService.updateByUsername(form, updPerson.getUsername());
+//			new SecurityContextLogoutHandler().logout(request, response, authentication);
+//			return "redirect:/auth/login";
+//		}
+//		else
+//		{
+//			return "redirect:/auth/login";
+//		}
 		
 	}
 	@GetMapping("/avatar/{id}")
 	@ResponseBody
 	public ResponseEntity<byte[]> getImage(@PathVariable int id)
 	{
-		Person person = peopleService.findOne(id);
+		PersonDto person = peopleService.findOne(id);
 		if (person != null && person.getAvatar() != null)
 		{
 			return ResponseEntity.ok()

@@ -1,6 +1,7 @@
 package danil.blog.controllers;
 
 import danil.blog.dto.FriendDto;
+import danil.blog.dto.PersonDto;
 import danil.blog.models.Friend;
 import danil.blog.models.Person;
 import danil.blog.services.FriendService;
@@ -29,7 +30,7 @@ public class FriendController {
 
     @GetMapping("")
     public String getAllUsers(Model model, Authentication auth) {
-        Person user = peopleService.findOneByUsername(auth.getName());
+        PersonDto user = peopleService.findOneByUsername(auth.getName());
         List<FriendDto> allUsers = friendService.getAllUsers(user.getId());
         System.out.println(auth.getName());
         model.addAttribute("users", allUsers);
@@ -39,11 +40,11 @@ public class FriendController {
     @GetMapping("/search")
     public String search(@RequestParam("query") String query, Model model, Authentication auth) {
         if (query != null && !query.trim().isEmpty()) {
-            Person curUser = peopleService.findOneByUsername(auth.getName());
+            PersonDto curUser = peopleService.findOneByUsername(auth.getName());
             List<FriendDto> searchResults = friendService.findByUsernameContainingIgnoreCase(query, curUser);
             model.addAttribute("searchResults", searchResults);
         } else {
-            Person user = peopleService.findOneByUsername(auth.getName());
+            PersonDto user = peopleService.findOneByUsername(auth.getName());
             List<FriendDto> allUsers = friendService.getAllUsers(user.getId());
             model.addAttribute("searchResults", allUsers);
         }
@@ -52,9 +53,9 @@ public class FriendController {
 
     @PostMapping("/add")
     public String sendRequest(int friendId, Authentication auth) {
-        Person user = peopleService.findOneByUsername(auth.getName());
+        PersonDto user = peopleService.findOneByUsername(auth.getName());
         System.out.println(auth.getName());
-        Person friend = peopleService.findOne(friendId);
+        PersonDto friend = peopleService.findOne(friendId);
         friendService.sendRequest(user, friend);
         return "redirect:/main/friends";
     }
@@ -62,7 +63,7 @@ public class FriendController {
     @PatchMapping  ("/accept")
     public String accept(int friendId, Authentication auth)
     {
-        Person user = peopleService.findOneByUsername(auth.getName());
+        PersonDto user = peopleService.findOneByUsername(auth.getName());
         friendService.acceptRequest(user.getId(), friendId);
         return "redirect:/main/friends";
     }
@@ -70,7 +71,7 @@ public class FriendController {
     @PatchMapping("/reject")
     public String reject(int friendId, Authentication auth)
     {
-        Person user = peopleService.findOneByUsername(auth.getName());
+        PersonDto user = peopleService.findOneByUsername(auth.getName());
         friendService.declineRequest(user.getId(), friendId);
         return "redirect:/main/friends";
     }
@@ -79,7 +80,7 @@ public class FriendController {
     public String myFriends(Model model, Authentication auth)
     {
         System.out.println(auth.getName());
-        Person pers = peopleService.findOneByUsername(auth.getName());
+        PersonDto pers = peopleService.findOneByUsername(auth.getName());
         List<FriendDto> friends = friendService.findUserFriends(pers.getId());
         model.addAttribute("friends", friends);
         return "friends/my_friends";
@@ -88,7 +89,7 @@ public class FriendController {
     @PostMapping("/delete")
     public String deleteFriend(int friendId, Authentication auth)
     {
-        Person persUser = peopleService.findOneByUsername(auth.getName());
+        PersonDto persUser = peopleService.findOneByUsername(auth.getName());
         Friend user = friendService.findOne(persUser.getId());
         friendService.deleteByFriendIdAndUserId(friendId, persUser.getId());
         return "redirect:/main/friends/my-friends";

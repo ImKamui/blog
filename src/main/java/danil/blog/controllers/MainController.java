@@ -2,6 +2,7 @@ package danil.blog.controllers;
 
 import java.io.IOException;
 
+import danil.blog.dto.PersonDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -133,7 +134,7 @@ public class MainController {
 	@ResponseBody
 	public ResponseEntity<byte[]> getAvatar(@PathVariable int id)
 	{
-		Person person = peopleService.findOne(id);
+		PersonDto person = peopleService.findOne(id);
 		if (person != null && person.getAvatar() != null)
 		{
 			return ResponseEntity.ok()

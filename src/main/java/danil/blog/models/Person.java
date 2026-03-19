@@ -1,23 +1,23 @@
 package danil.blog.models;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcType;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 
 @Entity
 @Table(name = "person")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Person {
 
 	@Column(name = "id")
@@ -46,12 +46,12 @@ public class Person {
 	@JdbcTypeCode(SqlTypes.VARBINARY)
 	private byte[] avatar;
 	
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<Post> posts;
 
     @OneToMany(mappedBy = "user")
     private List<Friend> users;
 
-    @OneToMany(mappedBy = "friend")
+    @OneToMany(mappedBy = "friend", fetch=FetchType.LAZY)
     private List<Friend> friends;
 }

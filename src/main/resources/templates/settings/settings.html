@@ -59,29 +59,29 @@
 		<div class="col p-0">
 			<span class="form-label fw-bold ms-2">Аватарка: </span>
 			<br />
-			<th:block th:if="${person.avatar == null}">
+			<th:block th:if="${form.avatar == null}">
 			<img src="/images/default_avatar.jpg" alt="Фото профиля" class="img-fluid rounded ms-2" style="width: 150px; height: 150px; object-fit: cover;"/>
 			</th:block>
-			<th:block th:unless="${person.avatar == null}">
-			<img th:src="@{/main/settings/avatar/{id}(id=${person.id})}" alt="Фото поста" class="img-fluid rounded ms-2" style="width: 150px; height: 150px; object-fit: cover;">
+			<th:block th:unless="${form.avatar == null}">
+			<img th:src="@{/main/settings/avatar/{id}(id=${form.id})}" alt="Фото поста" class="img-fluid rounded ms-2" style="width: 150px; height: 150px; object-fit: cover;">
 			</th:block>
 		</div>
 	</div>
 	<div class="row g-0">
 	    <div class="col p-0">
 	        <span class="form-label fw-bold ms-2">Имя пользователя: </span>
-	        <span th:text="${person.username}"/>
+	        <span th:text="${form.username}"/>
 	    </div>
 	</div>
 	<div class="row g-0 mt-2">
 	    <div class="col p-0">
 	        <span class="form-label fw-bold ms-2">Почта: </span>
-	        <span th:text="${person.email}" />
+	        <span th:text="${form.email}" />
 	    </div>
 	</div>
 	<div>
 		<p class="form-label h3 mt-4 ms-2">Изменить информацию об аккаунте: </p>
-		<form th:method="PATCH" th:action="@{/main/settings/{username}(username=${person.username})}" th:object="${person}" enctype="multipart/form-data">
+		<form th:method="PATCH" th:action="@{/main/settings/{username}(username=${form.username})}" th:object="${form}" enctype="multipart/form-data">
 			<label for="username" class="form-label ms-2">Введите новое имя пользователя: </label>
 			<input type="text" th:field="*{username}" id="username" class="form-control w-50 ms-2" />
 			<br/>

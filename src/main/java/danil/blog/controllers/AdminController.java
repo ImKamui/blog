@@ -2,6 +2,7 @@ package danil.blog.controllers;
 
 import java.util.List;
 
+import danil.blog.dto.PersonDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,7 +53,7 @@ public class AdminController {
 	{
 		if (query != null && !query.trim().isEmpty())
 		{
-			List<Person> searchResults = peopleService.findByUsernameContainingIgnoreCase(query);
+			List<PersonDto> searchResults = peopleService.findByUsernameContainingIgnoreCase(query);
 			model.addAttribute("searchResults", searchResults);
 		}
 		else
@@ -73,7 +74,7 @@ public class AdminController {
 			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Вы не можете удалить себя.");
 			return "redirect:/main/admin";
 		}
-		Person userToDelete = peopleService.findOne(id);
+		PersonDto userToDelete = peopleService.findOne(id);
 		if ("ADMIN".equals(userToDelete.getRole()) || "KING_ADMIN".equals(userToDelete.getRole()))
 		{
 			redirectAttributes.addFlashAttribute("errorMessage", "Ошибка удаления. Пользователь является администратором или высшим администратором.");

@@ -3,6 +3,8 @@ package danil.blog.services;
 import java.util.List;
 import java.util.Optional;
 
+import danil.blog.dto.PersonDto;
+import danil.blog.dto.mapper.PersonMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,34 +19,35 @@ public class PeopleService {
 
 	private final PeopleRepository peopleRepository;
 	private final PasswordEncoder passwordEncoder;
-	
+	private final PersonMapping personMapping;
 	
 	@Autowired
-	public PeopleService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder) {
+	public PeopleService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder, PersonMapping personMapping) {
 		this.peopleRepository = peopleRepository;
 		this.passwordEncoder = passwordEncoder;
+        this.personMapping = personMapping;
+    }
+	
+	public List<PersonDto> findAll()
+	{
+		return peopleRepository.findAll().stream().map(personMapping::toDto).toList();
 	}
 	
-	public List<Person> findAll()
+	public PersonDto findOne(int id)
 	{
-		return peopleRepository.findAll();
+		Optional<PersonDto> foundPerson = peopleRepository.findById(id).map(personMapping::toDto);
+		return foundPerson.isPresent() ?  (foundPerson.map(p -> p)).get(): null;
 	}
 	
-	public Person findOne(int id)
+	public PersonDto findOneByUsername(String username)
 	{
-		Optional<Person> foundPerson = peopleRepository.findById(id);
-		return foundPerson.orElse(null);
+		Optional<PersonDto> foundPerson = peopleRepository.findByUsername(username).map(personMapping::toDto);
+		return foundPerson.orElseGet(()->null);
 	}
 	
-	public Person findOneByUsername(String username)
+	public List<PersonDto> findByUsernameContainingIgnoreCase(String username)
 	{
-		Optional<Person> foundPerson = peopleRepository.findByUsername(username);
-		return foundPerson.orElse(null);
-	}
-	
-	public List<Person> findByUsernameContainingIgnoreCase(String username) 
-	{
-        return peopleRepository.findByUsernameContainingIgnoreCase(username);
+        return peopleRepository.findByUsernameContainingIgnoreCase(username).stream().map(personMapping::toDto).toList();
     }
 	
 	@Transactional
@@ -85,6 +88,11 @@ public class PeopleService {
 	public void delete(int id)
 	{
 		peopleRepository.deleteById(id);
+	}
+
+	public Person findOneEntityById(int id)
+	{
+		return peopleRepository.findById(id).orElseThrow(IllegalArgumentException :: new);
 	}
 	
 }
